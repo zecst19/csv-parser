@@ -114,6 +114,5 @@ pytest test_parse_csv.py -v
 
 ## AI Disclosure
 
-I used AI to generate part of this README.
-
+I used Claude to generate part of this README, also the changes in commit 199b79d - "code review", though not generated, were suggested by Claude 
 

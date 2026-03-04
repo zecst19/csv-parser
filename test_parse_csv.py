@@ -2,6 +2,7 @@ import csv
 import pytest
 import parse_csv
 from datetime import datetime
+from unittest.mock import patch
 
 @pytest.fixture(autouse=True)
 def reset_uuid_state():
@@ -130,6 +131,10 @@ def test_transform_tenure(mock_csv):
 
     assert "tenure" not in headers_in
 
+    with patch("parse_csv.datetime") as mock_dt:
+        mock_dt.now.return_value = datetime(2026, 3, 4)
+        mock_dt.strpyime.side_effect = datetime.strptime
+
     parse_csv.transform_csv(mock_csv, "mock_output.csv", {}, tenure=True)
     rows_out = list(csv.DictReader(open("mock_output.csv")))
     headers_out = next(csv.reader(open("mock_output.csv")))
@@ -160,6 +165,10 @@ def test_transform_unknown_column(mock_csv):
 def test_transform_unknown_transform(mock_csv):
     with pytest.raises(ValueError, match="Unkown transform: unknown_transform"):
         parse_csv.transform_csv(mock_csv, "mock_output.csv", {"name": "unknown_transform"})
+
+def test_transform_unknown_order_column(mock_csv):
+    with pytest.raises(ValueError, match="Unknown column in order: unknown_column"):
+        parse_csv.transform_csv(mock_csv, "mock_output.csv", {}, ["name", "email_address", "unknown_column"])
 
 def test_file_not_found():
     with pytest.raises(FileNotFoundError, match="Input file not found: unknown_file.csv"):

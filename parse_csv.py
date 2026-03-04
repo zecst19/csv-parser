@@ -142,6 +142,9 @@ def transform_csv(
 
     if order:
         # append columns not in new order to end 
+        for col in order:
+            if col not in input_cols:
+                raise ValueError(f"Unknown column in order: {col}")
         missing_cols = [c for c in input_cols if c not in order]
         new_order = order + missing_cols
     else:
