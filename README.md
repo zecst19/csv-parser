@@ -114,5 +114,14 @@ pytest test_parse_csv.py -v
 
 ## AI Disclosure
 
-I used Claude to generate part of this README, also the changes in commit 199b79d - "code review", though not generated, were suggested by Claude 
+I used Claude to generate part of this README(not the 'Scaling-up' section), also the changes in commit 199b79d - "code review", though not generated, were suggested by Claude 
 
+---
+
+## Scaling-up
+
+- Using streaming instead of loading the whole file into memory. Right now the only thing preventing rows being processed one at a time is the `--resolve-manager` flag, but since that's one I chose to introduce it could be discarded or run in a separate tool just for that purpose.
+
+- Using Multiprocessing. Using multiple workers to work on chunks of the data parallelly would increase the performance by a good margin. 
+
+- Using Profiling tools. At scale it can be challenging to find exact bottlenecks so using tools like `cProfile` would be a good idea.
