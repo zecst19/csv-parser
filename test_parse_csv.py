@@ -132,7 +132,9 @@ def test_transform_tenure(mock_csv):
 
     parse_csv.transform_csv(mock_csv, "mock_output.csv", {}, tenure=True)
     rows_out = list(csv.DictReader(open("mock_output.csv")))
+    headers_out = next(csv.reader(open("mock_output.csv")))
 
+    assert "tenure" in headers_out
     assert rows_out[0]["tenure"] == "1 year, 0 months, 3 days"
     assert rows_out[1]["tenure"] == "5 years, 0 months, 15 days"
     assert rows_out[2]["tenure"] == "5 years, 8 months, 13 days"
@@ -144,7 +146,11 @@ def test_transform_resolve_manager(mock_csv):
 
     parse_csv.transform_csv(mock_csv, "mock_output.csv", {}, resolve_manager=True)
     rows_out = list(csv.DictReader(open("mock_output.csv")))
+    headers_out = next(csv.reader(open("mock_output.csv")))
 
+    assert "manager_name" in headers_out
+    assert rows_out[0]["manager_name"] == "CDD3AA5D-F8BF-40BB-B220-36147E1B75F7"
+    assert rows_out[1]["manager_name"] == "A37D98B9-98E7-43ED-9B27-A79EFDDAC033"
     assert rows_out[2]["manager_name"] == "Ashley Hernandez"
 
 def test_transform_unknown_column(mock_csv):

@@ -61,7 +61,7 @@ def timestamp_to_date(value: str) -> str:
     try:
         dt = datetime.strptime(value, DATE_FORMAT)
         return dt.strftime("%Y-%m-%d")
-    except:
+    except ValueError:
         ## if conversion fails, return original value
         return value
 
@@ -110,19 +110,19 @@ def parse_args():
     return parser.parse_args()
 
 def transform_csv(
-        input: str, 
-        output:str, 
+        input_file: str, 
+        output_file:str, 
         columns_transform: dict[str, str], 
         order: list[str] | None = None,
         tenure: bool = False,
         resolve_manager: bool = False,
         ):
-    if not Path(input).exists():
-        raise FileNotFoundError(f"Input file not found: {input}")
+    if not Path(input_file).exists():
+        raise FileNotFoundError(f"Input file not found: {input_file}")
     
-    with open(f'{input}', 'r') as csv_file:
+    with open(f'{input_file}', 'r') as csv_file:
         reader = csv.DictReader(csv_file)
-        input_cols = reader.fieldnames or []
+        input_cols = list(reader.fieldnames or [])
         rows = list(reader)
 
     for col in columns_transform:
@@ -147,7 +147,7 @@ def transform_csv(
     else:
         new_order = input_cols
 
-    with open(f'{output}', 'w') as new_file:
+    with open(f'{output_file}', 'w', newline='') as new_file:
         writer = csv.DictWriter(new_file, fieldnames=new_order)
         writer.writeheader()
         for row in rows:
