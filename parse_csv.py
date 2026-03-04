@@ -16,9 +16,25 @@ _uuid_map: dict[str, int] = {}
 _uuid_counter = 0
 
 def nothing(value: str) -> str:
+    '''
+    Docstring for nothing
+    
+    :param value: Description
+    :type value: str
+    :return: Description
+    :rtype: str
+    '''
     return value
 
 def uuid_to_int(value: str) -> str:
+    '''
+    Docstring for uuid_to_int
+    
+    :param value: Description
+    :type value: str
+    :return: Description
+    :rtype: str
+    '''
     global _uuid_counter
     if value not in _uuid_map:
         _uuid_counter += 1
@@ -26,6 +42,14 @@ def uuid_to_int(value: str) -> str:
     return str(_uuid_map[value])
 
 def _redact_email(value: str) -> str:
+    '''
+    Redact email while keeping look ('@' and '.' position) and length
+    
+    :param value: email
+    :type value: str
+    :return: redacted email
+    :rtype: str
+    '''
     split = value.split('@', 1)
     user = split[0]
     domain = split[1]
@@ -38,14 +62,30 @@ def _redact_email(value: str) -> str:
     return random_user + '@' + random_org + '.' + tld
 
 def _redact_name(value: str) -> str:
+    '''
+    Redact name while keeping look and length
+    
+    :param value: name
+    :type value: str
+    :return: redacted name
+    :rtype: str
+    '''
     split_names = value.split(' ')
     redacted = []
     for name in split_names:
-        redacted.append(''.join(random.choices(string.ascii_lowercase, k=len(name))))
+        redacted.append(''.join(random.choices(string.ascii_lowercase, k=len(name))).capitalize())
 
     return ' '.join(redacted)
 
 def redact(value: str) -> str:
+    '''
+    Redact value from col
+    
+    :param value: name or email
+    :type value: str
+    :return: redacted name or email
+    :rtype: str
+    '''
     if re.match(EMAIL_REGEX, value):
         return _redact_email(value)
     else:
@@ -54,6 +94,14 @@ def redact(value: str) -> str:
 
 
 def timestamp_to_date(value: str) -> str:
+    '''
+    Converts timestamp to date in YYYY-MM-DD format
+    
+    :param value: timestamp
+    :type value: str
+    :return: date
+    :rtype: str
+    '''
     tz_reg = re.search(TIMEZONE_REGEX, value)
     if tz_reg:
         value = value[:tz_reg.start()]
@@ -67,6 +115,14 @@ def timestamp_to_date(value: str) -> str:
 
 
 def clear(value: str) -> str:
+    '''
+    Clears column value
+    
+    :param value: value to be cleared
+    :type value: str
+    :return: empty string
+    :rtype: str
+    '''
     return ""
 
 
@@ -79,6 +135,14 @@ TRANSFORMS = {
 }
 
 def calculate_tenure(value: str) -> str:
+    '''
+    Calculates tenure for employee (how much time has passed since start_date)
+    
+    :param value: start_date
+    :type value: str
+    :return: tenure as formated string
+    :rtype: str
+    '''
     try:
         start_date = datetime.strptime(value, START_DATE_FORMAT)
     except ValueError:
@@ -91,6 +155,14 @@ def calculate_tenure(value: str) -> str:
     return f"{diff.years} year{'s' if diff.years != 1 else ''}, {diff.months} month{'s' if diff.months != 1 else ''}, {diff.days} day{'s' if diff.days != 1 else ''}"
 
 def resolve_manager_names(rows: list[dict]) -> list[dict]:
+    '''
+    Adds column for manager_name from each manager_id
+    
+    :param rows: all rows
+    :type rows: list[dict]
+    :return: modified rows
+    :rtype: list[dict[Any, Any]]
+    '''
     id_to_name = {row["user_id"]: row["name"] for row in rows}
     for row in rows:
         manager_id = row.get("manager_id", "")
@@ -99,6 +171,12 @@ def resolve_manager_names(rows: list[dict]) -> list[dict]:
     return rows
 
 def parse_args():
+    '''
+    Add arguments for parser
+    
+    :return: ArgumentParser
+    :rtype: Namespace
+    '''
     parser = argparse.ArgumentParser(description="CSV CLI tool")
     parser.add_argument("-i", "--input", required=True, help="input file name")
     parser.add_argument("-o", "--output", help="output file name", default="new_user_sample.csv")
@@ -117,6 +195,22 @@ def transform_csv(
         tenure: bool = False,
         resolve_manager: bool = False,
         ):
+    '''
+    Transforms CSV and writes to ouput file
+    
+    :param input_file: input file name
+    :type input_file: str
+    :param output_file: output file name 
+    :type output_file: str
+    :param columns_transform: columns and respective transformation to apply
+    :type columns_transform: dict[str, str]
+    :param order: new column order
+    :type order: list[str] | None
+    :param tenure: calculate tenure if true
+    :type tenure: bool
+    :param resolve_manager: resolve manager names if true
+    :type resolve_manager: bool
+    '''
     if not Path(input_file).exists():
         raise FileNotFoundError(f"Input file not found: {input_file}")
     

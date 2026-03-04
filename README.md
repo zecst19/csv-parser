@@ -7,7 +7,8 @@ A Python command-line application for transforming CSV datasets — reordering c
 ## Requirements
 
 - Python 3.9+
-- [python-dateutil](https://pypi.org/project/python-dateutil/)
+- python-dateutil
+- pytest
 
 Install dependencies:
 
@@ -88,7 +89,6 @@ python parse_csv.py \
 ## Running the Tests
 
 ```bash
-pip install pytest
 pytest test_parse_csv.py -v
 ```
 
