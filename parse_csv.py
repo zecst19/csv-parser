@@ -17,7 +17,7 @@ _uuid_counter = 0
 
 def nothing(value: str) -> str:
     '''
-    Docstring for nothing
+    No-op
     
     :param value: Description
     :type value: str
@@ -28,7 +28,7 @@ def nothing(value: str) -> str:
 
 def uuid_to_int(value: str) -> str:
     '''
-    Docstring for uuid_to_int
+    Change UUID into int value while maintaining it's uniqueness, used _uuid_counter to assign new value and _uuid_map to make sure values aren't repeated 
     
     :param value: Description
     :type value: str
